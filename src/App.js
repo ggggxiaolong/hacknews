@@ -1,47 +1,44 @@
 import React, { Component } from "react";
 import './App.css'
 
-const list = [
-  {
-    title: 'React',
-    url:'https://facebook.github.io',
-    author:'Jordan Walke',
-    num_comments:3,
-    point:4,
-    objectIs:0,
-  },
-  {
-    title:'Redux',
-    url:'https://github.com/reactjs/redux',
-    author:'Dan Abramov, Adrew Clark',
-    num_comments:2,
-    point:5,
-    objectIs:1,
-  }
-]
+  const list = [
+    "a",
+    "b",
+    "abc",
+    "abdc",
+    "bcd",
+    "cd",
+    "ac"
+  ]
+
+const isSearched = searchItem => item => item.toLowerCase().includes(searchItem.toLowerCase())
 
 class App extends Component {
 
-  constructor(props){
-    super(props)
-    this.state = {
-      list: list,
-      name: "xiao ming"
-    }
+  constructor(prop){
+    super(prop)
+
+    this.state = {list, searchItem:"",}
   }
+
+  onSearchChange= (event) => {
+    this.setState({
+      searchItem: event.target.value
+    })
+  }
+
   render(){
-    return (
+    const {searchItem,list} = this.state
+    return(
       <div className="App">
-        <h2>{this.state.name}</h2>
-        {
-          this.state.list.map( item =>
-              <div key={item.objectIs}>
-                <span> <a href={item.url}>{item.title}</a></span>
-                <span>{item.author}</span>
-                <span>{item.num_comments}</span>
-                <span>{item.point}</span>
-              </div>
-          )}
+        <form>
+          <input type='text' onChange={this.onSearchChange} />
+        </form>
+        {list.filter(isSearched(searchItem)).map(item =>
+          <div key={item}>
+            <span>{item}</span>
+          </div>
+        )}
       </div>
     )
   }
