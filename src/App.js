@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import './App.css'
 
-const isSearched = (param) => (item) => {item.title.toLowerCase().includes(param.toLowerCase())}
+const isSearched = param => item => item.title.toLowerCase().includes(param.toLowerCase())
 const list = [
   {
     title: "React",
@@ -23,24 +23,25 @@ const list = [
 
 class Search extends Component {
   render() {
-    const {value, onChange} = this.props
-
+    const {value, onChange, children} = this.props
+    console.log(value)
+    console.log(onChange)
     return(
       <form>
-        <input
+        {children}<input
           type="text"
-          value="{value}"
-          onChange={onchange}
+          value={value}
+          onChange={onChange}
           />
       </form>
     )
   }
 }
 
-class Table extends Comment {
+class Table extends Component {
   render() {
     const {list, pattern, onDismiss} = this.props
-
+    console.log(list.filter(isSearched(pattern)))
     return (
       <div>
         {list.filter(isSearched(pattern)).map(item =>
@@ -51,7 +52,7 @@ class Table extends Comment {
             <span>
               <button
                 type='button'
-                onClick={onDismiss}
+                onClick={() => onDismiss(item.objectID)}
                 >
                 Dismiss
               </button>  
@@ -68,15 +69,29 @@ class App extends Component {
     super(props)
     this.state = {list:list,searchTerm:""}
   }
+
+  onSearchChange = (event) => {
+    this.setState({
+      searchTerm: event.target.value
+    })
+  }
+
+  onDismiss = (param) => {
+    const newList = this.state.list.filter(item => item.objectID !== param)
+    this.setState({
+      list: newList
+    })
+  }
   
   render(){
-    const {searchTerm, list} = this.state
+    const {list,searchTerm} = this.state
     return(
       <div className="App">
         <Search
           value={searchTerm}
-          onchange={this.onSearchChange}
-          />
+          onChange={this.onSearchChange}>
+          Search
+        </Search>
         <Table
           list={list}
           pattern={searchTerm}
