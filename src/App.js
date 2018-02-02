@@ -1,41 +1,21 @@
 import React, { Component } from "react";
 import './App.css'
 
+const DEAFULT_QUERY = 'redux'
+const PATH_BASE = 'https://hn.algolia.com/api/v1'
+const PATH_SEARCH = '/search'
+const PARAM_SEARCH = 'query='
+const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}`
 const isSearched = param => item => item.title.toLowerCase().includes(param.toLowerCase())
-const list = [
-  {
-    title: "React",
-    url:"https://facebook.github.io",
-    author:'Jordan Walke',
-    num_comments:3,
-    point:4,
-    objectID:0,
-  },
-  {
-    title:"Redux",
-    url:"https://github.com/reactjs/redux",
-    author:"Dan Abrawmov, Adrew Clark",
-    num_comments:2,
-    point:5,
-    objectID:1,
-  }
-]
-
-const largeColumn = {
-  width: '40%',
+const style = {
+  largeColumn:{width: '40%',},
+  midColumn: {width: '30%'},
+  smallColumn: {width: '10%'}
 }
 
-const midColumn = {
-  width: '30%',
-}
-
-const smallColumn = {
-  width: '10%',
-}
-
-const Search = ({value, onChange, children}) =>
+const Search = ({value, onChange, childrn}) =>
   <form>
-    {children}<input
+    {childrn}<input
       type='text'
       value={value}
       onChange={onChange}
@@ -44,66 +24,77 @@ const Search = ({value, onChange, children}) =>
 
 const Table = ({list, pattern, onDismiss}) =>
   <div className='table'>
-    {list.filter(isSearched(pattern)).map(item =>
-      <div key={item.objectID} className='table-row'>
-        <span style={largeColumn}>
-          <a href={item.url}>{item.title}</a>
-        </span>
-        <span style={midColumn}>{item.author}</span>
-        <span style={smallColumn}>{item.num_comments}</span>
-        <span style={smallColumn}>
-          {item.point}
-        </span>
-        <span style={smallColumn}>
-          <button
-            onClick={() => onDismiss(item.objectID)}
-            className='button-inline'
-            >
+    {list.map(item =>
+    <div key={item.objectID} className='table-row'>
+      <span>
+        <a href={item.url}>{item.title}</a>
+      </span>
+      <span>{item.num_comments}</span>
+      <span>{item.poins}</span>
+      <span>
+        <button
+          onClick={() => onDismiss(item.objectID)}
+          className='button-inline'
+          >
           Dismiss
-          </button>
-        </span>
-      </div>
+        </button>
+      </span>
+    </div>
     )}
   </div>
 
-class App extends Component {
+export default class App extends Component{
   constructor(props){
     super(props)
-    this.state = {list:list,searchTerm:""}
+    
+   this.state = {
+     result: null,
+     searchTerm: DEAFULT_QUERY
+   } 
   }
 
-  onSearchChange = (event) => {
-    this.setState({
-      searchTerm: event.target.value
-    })
+  setSearchTopStories = result => {
+    this.setState({result: result.hits})
+  }
+
+  fetchSearchTopStories = searchTerm => {
+    fetch(url + searchTerm)
+      .then(res => res.json())
+      .then(json => this.setSearchTopStories(json))
+      .catch(e => e) 
+  }
+
+  componentDidMount() {
+    const {searchTerm} = this.state
+    this.fetchSearchTopStories(searchTerm)
+  }  
+
+  onSearchChange =(event) => {
+    this.setState({searchTerm: event.target.value})
   }
 
   onDismiss = (param) => {
-    const newList = this.state.list.filter(item => item.objectID !== param)
-    this.setState({
-      list: newList
-    })
+    const newList = this.state.result.filter(item => item.objectID !== param)
+    this.setState({result:newList})
   }
-  
   render(){
-    const {list,searchTerm} = this.state
+    const {result, searchTerm} = this.state
+    if(!result){return null}
     return(
-      <div className="page">
+      <div className='page'>
         <div className='interactions'>
           <Search
             value={searchTerm}
-            onChange={this.onSearchChange}>
+            onChange ={this.onSearchChange}>
             Search
           </Search>
         </div>
-        <Table
-          list={list}
-          pattern={searchTerm}
-          onDismiss={this.onDismiss}
-          />
+       <Table
+        list={result} 
+        pattern={searchTerm}
+        onDismiss={this.onDismiss}
+        />
       </div>
     )
   }
 }
-
-export default App
