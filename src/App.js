@@ -12,13 +12,21 @@ const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}`
 //   smallColumn: {width: '10%'}
 // }
 
-const Search = ({value, onChange, childrn}) =>
-  <form>
-    {childrn}<input
+const Search = ({
+  value,
+  onChange,
+  onSubmit,
+  children 
+}) =>
+  <form onSubmit={onSubmit}>
+    <input
       type='text'
       value={value}
       onChange={onChange}
       />
+    <button type="submit">
+    {children}
+    </button>
   </form>
 
 const Table = ({list, pattern, onDismiss}) =>
@@ -57,6 +65,7 @@ export default class App extends Component{
   }
 
   fetchSearchTopStories = searchTerm => {
+    console.log`fetch ${searchTerm}`
     fetch(url + searchTerm)
       .then(res => res.json())
       .then(json => this.setSearchTopStories(json))
@@ -69,7 +78,15 @@ export default class App extends Component{
   }  
 
   onSearchChange =(event) => {
+    console.log(event.target.value)
     this.setState({searchTerm: event.target.value})
+  }
+
+  onSearchSubmit= (event) => {
+    const {searchTerm} = this.state
+    console.log(`search ${searchTerm}`)
+    this.fetchSearchTopStories(searchTerm)
+    event.preventDefault()
   }
 
   onDismiss = (param) => {
@@ -83,7 +100,8 @@ export default class App extends Component{
         <div className='interactions'>
           <Search
             value={searchTerm}
-            onChange ={this.onSearchChange}>
+            onChange ={this.onSearchChange}
+            onSubmit={this.onSearchSubmit}>
             Search
           </Search>
         </div>
