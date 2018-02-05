@@ -6,12 +6,11 @@ const PATH_BASE = 'https://hn.algolia.com/api/v1'
 const PATH_SEARCH = '/search'
 const PARAM_SEARCH = 'query='
 const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}`
-const isSearched = param => item => item.title.toLowerCase().includes(param.toLowerCase())
-const style = {
-  largeColumn:{width: '40%',},
-  midColumn: {width: '30%'},
-  smallColumn: {width: '10%'}
-}
+// const style = {
+//   largeColumn:{width: '40%',},
+//   midColumn: {width: '30%'},
+//   smallColumn: {width: '10%'}
+// }
 
 const Search = ({value, onChange, childrn}) =>
   <form>
@@ -54,7 +53,7 @@ export default class App extends Component{
   }
 
   setSearchTopStories = result => {
-    this.setState({result: result.hits})
+    this.setState({result: result})
   }
 
   fetchSearchTopStories = searchTerm => {
@@ -74,12 +73,11 @@ export default class App extends Component{
   }
 
   onDismiss = (param) => {
-    const newList = this.state.result.filter(item => item.objectID !== param)
-    this.setState({result:newList})
+    const newList = this.state.result.hits.filter(item => item.objectID !== param)
+    this.setState({result: {...this.result, hits: newList}})
   }
   render(){
     const {result, searchTerm} = this.state
-    if(!result){return null}
     return(
       <div className='page'>
         <div className='interactions'>
@@ -89,11 +87,11 @@ export default class App extends Component{
             Search
           </Search>
         </div>
-       <Table
-        list={result} 
+       {result && <Table
+        list={result.hits} 
         pattern={searchTerm}
         onDismiss={this.onDismiss}
-        />
+        />}
       </div>
     )
   }
