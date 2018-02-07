@@ -102,15 +102,22 @@ export default class App extends Component{
     this.setState({
       searchKey: searchTerm
     })
-    if(!results[this.state.searchKey]){
+    if(!results[searchTerm]){
       this.fetchSearchTopStories(searchTerm)
     }
     event.preventDefault()
   }
 
   onDismiss = (param) => {
-    const newList = this.state.result.hits.filter(item => item.objectID !== param)
-    this.setState({result: {...this.result, hits: newList}})
+    const {results, searchKey} = this.state
+    const {hits, page} = results[searchKey]
+    const newList = hits.filter(item => item.objectID !== param)
+    this.setState({
+        results: {
+        ...results,
+        [searchKey]:{hits:newList, page}
+      }
+    })
   }
   render(){
     const {results, searchTerm, searchKey} = this.state
