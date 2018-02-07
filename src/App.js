@@ -7,11 +7,6 @@ const PATH_SEARCH = '/search'
 const PARAM_SEARCH = 'query='
 const PARAM_PAGE = "page="
 const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}`
-// const style = {
-//   largeColumn:{width: '40%',},
-//   midColumn: {width: '30%'},
-//   smallColumn: {width: '10%'}
-// }
 
 const Search = ({
   value,
@@ -30,7 +25,7 @@ const Search = ({
     </button>
   </form>
 
-const Table = ({list, pattern, onDismiss}) =>
+const Table = ({list, onDismiss}) =>
   <div className='table'>
     {list.map(item =>
     <div key={item.objectID} className='table-row'>
@@ -57,20 +52,30 @@ export default class App extends Component{
     
    this.state = {
      result: null,
-     searchTerm: DEAFULT_QUERY
+     searchTerm: DEAFULT_QUERY,
+     searchKey:''
    } 
   }
 
   setSearchTopStories = (result) => {
     const {hits, page} = result
-    const oldHits = page !== 0
-      ? this.state.result.hits
+    const {searchKey, results} = this.state
+    const oldHits = results && results[searchKey]
+      ? results[searchKey].hits
       :[]
     const updateHits = [
       ...oldHits,
       ...hits
     ]
-    this.setState({result: {hits: updateHits,page }})
+    this.setState({
+      results: {
+        ...results,
+        [searchKey]:{
+          hits: updateHits,
+          page
+        }
+      }
+    })
   }
 
   fetchSearchTopStories = (searchTerm, page=0) => {
@@ -82,6 +87,9 @@ export default class App extends Component{
 
   componentDidMount() {
     const {searchTerm} = this.state
+    this.setState({
+      searchKey: searchTerm
+    })
     this.fetchSearchTopStories(searchTerm)
   }  
 
@@ -90,8 +98,13 @@ export default class App extends Component{
   }
 
   onSearchSubmit= (event) => {
-    const {searchTerm} = this.state
-    this.fetchSearchTopStories(searchTerm)
+    const {searchTerm, results} = this.state
+    this.setState({
+      searchKey: searchTerm
+    })
+    if(!results[this.state.searchKey]){
+      this.fetchSearchTopStories(searchTerm)
+    }
     event.preventDefault()
   }
 
@@ -100,8 +113,9 @@ export default class App extends Component{
     this.setState({result: {...this.result, hits: newList}})
   }
   render(){
-    const {result, searchTerm} = this.state
-    const page = (result && result.page) || 0
+    const {results, searchTerm, searchKey} = this.state
+    const page = (results && results[searchKey] && results[searchKey].page) || 0
+    const list = (results && results[searchKey] && results[searchKey].hits)||[]
     return(
       <div className='page'>
         <div className='interactions'>
@@ -112,15 +126,12 @@ export default class App extends Component{
             Search
           </Search>
         </div>
-       {result && 
         <Table
-          list={result.hits} 
-          pattern={searchTerm}
+          list={list} 
           onDismiss={this.onDismiss}
           />
-        }
         <div className="interactions">
-          <button onClick={() => this.fetchSearchTopStories(searchTerm, page + 1)}>
+          <button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
             More
           </button>
         </div>
