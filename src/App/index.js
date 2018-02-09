@@ -1,6 +1,6 @@
 import { DEAFULT_QUERY, PATH_BASE, PATH_SEARCH, PARAM_PAGE, PARAM_SEARCH } from "../constants";
 import React, { Component } from "react";
-import { Table, Search } from "../components";
+import { Table, Search, Loading } from "../components";
 import './index.css'
 
 export default class App extends Component {
@@ -12,10 +12,12 @@ export default class App extends Component {
             searchKey: '',
             error: null,
             results:[],
+            isLoading: false,
         }
     }
 
     fetchSearchTopStories = (searchTerm, page = 0) => {
+        this.setState({isLoading: true})
         const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`
         fetch(url)
             .then(res => res.json())
@@ -44,7 +46,8 @@ export default class App extends Component {
                     hits:newHits,
                     page
                 }
-            }
+            },
+            isLoading: false,
         })
     }
 
@@ -95,7 +98,8 @@ export default class App extends Component {
             results,
             searchKey,
             searchTerm,
-            error
+            error,
+            isLoading
         } = this.state
         const list = (
             results &&
@@ -128,10 +132,13 @@ export default class App extends Component {
                     />
                 }
                 <div className='interactions'>
-                    <button
-                        onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
-                        More
-                    </button>
+                    {isLoading
+                        ? <Loading/>
+                        : <button
+                            onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
+                            More
+                        </button>
+                    }
                 </div>
             </div>
         )
