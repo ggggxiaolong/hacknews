@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Table has a valid snapshot 1`] = `
+<div
+  className="table"
+>
+  <div
+    className="table-row"
+  >
+    <span>
+      <a
+        href={undefined}
+      >
+        1
+      </a>
+    </span>
+    <span>
+      1
+    </span>
+    <span>
+      1
+    </span>
+    <span>
+      <button
+        className="button-inline"
+        onClick={[Function]}
+      >
+        Dismiss
+      </button>
+    </span>
+  </div>
+  <div
+    className="table-row"
+  >
+    <span>
+      <a
+        href={undefined}
+      >
+        2
+      </a>
+    </span>
+    <span>
+      2
+    </span>
+    <span>
+      2
+    </span>
+    <span>
+      <button
+        className="button-inline"
+        onClick={[Function]}
+      >
+        Dismiss
+      </button>
+    </span>
+  </div>
+</div>
+`;
