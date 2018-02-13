@@ -3,4 +3,4 @@ import FontAwesomeIcon from "@fortawesome/react-fontawesome";
 import { faLeaf } from "@fortawesome/fontawesome-free-solid";
 
 export const Loading = () => 
-    <FontAwesomeIcon icon={faLeaf} />
+    <FontAwesomeIcon icon={faLeaf} pulse/>

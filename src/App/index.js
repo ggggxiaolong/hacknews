@@ -1,6 +1,6 @@
 import { DEAFULT_QUERY, PATH_BASE, PATH_SEARCH, PARAM_PAGE, PARAM_SEARCH } from "../constants";
 import React, { Component } from "react";
-import { Table, Search, Loading } from "../components";
+import { Table, Search, ButtonWithLoading } from "../components";
 import './index.css'
 
 export default class App extends Component {
@@ -132,13 +132,11 @@ export default class App extends Component {
                     />
                 }
                 <div className='interactions'>
-                    {isLoading
-                        ? <Loading/>
-                        : <button
-                            onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
-                            More
-                        </button>
-                    }
+                    <ButtonWithLoading
+                        isLoading={isLoading}
+                        onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
+                        More
+                    </ButtonWithLoading>
                 </div>
             </div>
         )
