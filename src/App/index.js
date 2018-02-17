@@ -26,42 +26,59 @@ export default class App extends Component {
     }
 
     setSearchTopStories = (result) => {
-        const {hits, page} = result
-        const {results, searchKey} = this.state
-        const oldHit = (
-            results 
-            && results[searchKey]
-            && results[searchKey].hits
-        ) || []
+        this.setState(prevState => {
+            const {
+                results,
+                searchKey
+            } = prevState
+            const {
+                hits,
+                page
+            } = result
+            const oldHit = (
+                results
+                && results[searchKey]
+                && results[searchKey].hits
+            ) || []
 
-        const newHits = [
-            ...oldHit,
-            ...hits
-        ]
-        
-        this.setState({
-            results: {
-                ...results,
-                [searchKey]:{
-                    hits:newHits,
-                    page
-                }
-            },
-            isLoading: false,
+            const newHits = [
+                ...oldHit,
+                ...hits
+            ]
+            return {
+                results: {
+                    ...results,
+                    [searchKey]: {
+                        hits: newHits,
+                        page
+                    },
+                },
+                isLoading: false,
+            }
         })
     }
 
-    onDismiss = itemId => {
-        const {searchKey, results} = this.state
-        const {hits, page} = results[searchKey]
-        const newHits = hits.filter(item => item.objectID !== itemId)
+    onDismiss = (itemId) => {
+        this.setState(prevState => {
+            const {
+                searchKey,
+                results,
+            } = prevState
 
-        this.setState({
-            results: {
-                ...results,
-                [searchKey]: {
-                    hits:newHits,
-                    page
+            const {
+                hits,
+                page
+            } = results[searchKey]
+
+            const newHits = hits.filter(item => item.objectID !== itemId)
+
+            return {
+                results: {
+                    ...results,
+                    [searchKey]: {
+                        hits: newHits,
+                        page
+                    }
                 }
             }
         })
@@ -99,7 +116,7 @@ export default class App extends Component {
             searchKey,
             searchTerm,
             error,
-            isLoading
+            isLoading,
         } = this.state
         const list = (
             results &&
